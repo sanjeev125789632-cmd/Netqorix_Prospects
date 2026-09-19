@@ -97,7 +97,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             Netqorix Prospects Command Center
           </h1>
           <p className="text-slate-300 text-sm mt-1 max-w-2xl">
-            913 high-intent prospects across Chandigarh Tricity, Hyderabad, and Mira Road-Vasai-Virar.
+            1,222 high-intent prospects across Chandigarh Tricity, Hyderabad, Mira Road-Vasai-Virar, and Delhi.
             Track calls, log WhatsApp follow-ups, and accelerate deals.
           </p>
         </div>
@@ -164,7 +164,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <div className="mt-3 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
             <span>Avg Lead: <strong>{formatINR(Math.round(totalPipelineINR / totalLeads))}</strong></span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-medium">913 deals</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-medium">1,222 deals</span>
           </div>
         </div>
 
