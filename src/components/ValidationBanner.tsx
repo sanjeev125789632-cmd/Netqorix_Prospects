@@ -59,7 +59,8 @@ export const ValidationBanner: React.FC<ValidationBannerProps> = ({ summary }) =
             <strong className="font-mono">{summary.total}</strong> prospects loaded (Chandigarh:{' '}
             <strong className="font-mono">{summary.chandigarhTricity}</strong>, Hyderabad:{' '}
             <strong className="font-mono">{summary.hyderabad}</strong>, Mira Road:{' '}
-            <strong className="font-mono">{summary.miraRoadVasaiVirar}</strong>, Tier A:{' '}
+            <strong className="font-mono">{summary.miraRoadVasaiVirar}</strong>, Delhi:{' '}
+            <strong className="font-mono">{summary.delhi}</strong>, Tier A:{' '}
             <strong className="font-mono">{summary.tierA}</strong>).
           </span>
         </div>
@@ -74,7 +75,7 @@ export const ValidationBanner: React.FC<ValidationBannerProps> = ({ summary }) =
       {expanded && (
         <div className="max-w-7xl mx-auto mt-2 pt-2 border-t border-emerald-500/20 grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono">
           <div className="bg-white/60 dark:bg-slate-900/60 p-2 rounded border border-emerald-500/20">
-            Total Leads: <strong className="text-emerald-700 dark:text-emerald-300">{summary.total} / 913</strong>
+            Total Leads: <strong className="text-emerald-700 dark:text-emerald-300">{summary.total} / 1222</strong>
           </div>
           <div className="bg-white/60 dark:bg-slate-900/60 p-2 rounded border border-emerald-500/20">
             Chandigarh Tricity: <strong className="text-emerald-700 dark:text-emerald-300">{summary.chandigarhTricity} / 307</strong>
@@ -86,7 +87,10 @@ export const ValidationBanner: React.FC<ValidationBannerProps> = ({ summary }) =
             Mira Road-Vasai-Virar: <strong className="text-emerald-700 dark:text-emerald-300">{summary.miraRoadVasaiVirar} / 304</strong>
           </div>
           <div className="bg-white/60 dark:bg-slate-900/60 p-2 rounded border border-emerald-500/20">
-            Tier A (High Fit): <strong className="text-emerald-700 dark:text-emerald-300">{summary.tierA} / 189</strong>
+            Delhi: <strong className="text-emerald-700 dark:text-emerald-300">{summary.delhi} / 309</strong>
+          </div>
+          <div className="bg-white/60 dark:bg-slate-900/60 p-2 rounded border border-emerald-500/20">
+            Tier A (High Fit): <strong className="text-emerald-700 dark:text-emerald-300">{summary.tierA} / 236</strong>
           </div>
           <div className="bg-white/60 dark:bg-slate-900/60 p-2 rounded border border-emerald-500/20">
             Listed Phone: <strong className="text-emerald-700 dark:text-emerald-300">{summary.hasPhone}</strong>

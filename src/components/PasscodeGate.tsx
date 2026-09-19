@@ -103,7 +103,7 @@ export const PasscodeGate: React.FC<PasscodeGateProps> = ({ onAuthenticated }) =
         </form>
 
         <div className="mt-8 pt-6 border-t border-slate-800/80 text-center text-xs text-slate-500">
-          913 Validated Prospects • 3 Regions • Tier A Prioritization
+          1,222 Validated Prospects • 4 Regions • Tier A Prioritization
         </div>
       </div>
     </div>

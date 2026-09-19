@@ -165,6 +165,7 @@ export const CallFirstView: React.FC<CallFirstViewProps> = ({
             <option value="Chandigarh Tricity">Chandigarh Tricity</option>
             <option value="Hyderabad">Hyderabad</option>
             <option value="Mira Road-Vasai-Virar">Mira Road-Vasai-Virar</option>
+            <option value="Delhi">Delhi</option>
           </select>
 
           {/* Only in Window toggle */}

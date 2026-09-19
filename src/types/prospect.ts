@@ -50,6 +50,7 @@ export interface ValidationSummary {
   chandigarhTricity: number;
   hyderabad: number;
   miraRoadVasaiVirar: number;
+  delhi: number;
   tierA: number;
   hasPhone: number;
   noneListedPhone: number;

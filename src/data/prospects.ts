@@ -2,13 +2,15 @@ import type { Prospect, ValidationSummary } from '../types/prospect';
 import { prospectsChandigarh } from './prospectsChandigarh';
 import { prospectsHyderabad } from './prospectsHyderabad';
 import { prospectsMiraRoad } from './prospectsMiraRoad';
+import { prospectsDelhi } from './prospectsDelhi';
 import { APP_CONFIG } from '../config';
 
-// All 913 prospects strictly merged in original order without truncation or omission
+// All 1222 prospects strictly merged in original order without truncation or omission
 export const allProspects: Prospect[] = [
   ...prospectsChandigarh,
   ...prospectsHyderabad,
-  ...prospectsMiraRoad
+  ...prospectsMiraRoad,
+  ...prospectsDelhi
 ];
 
 export function validateProspectsData(prospects: Prospect[] = allProspects): ValidationSummary {
@@ -18,6 +20,7 @@ export function validateProspectsData(prospects: Prospect[] = allProspects): Val
   const chandigarhCount = prospects.filter(p => p.region === 'Chandigarh Tricity').length;
   const hyderabadCount = prospects.filter(p => p.region === 'Hyderabad').length;
   const miraRoadCount = prospects.filter(p => p.region === 'Mira Road-Vasai-Virar').length;
+  const delhiCount = prospects.filter(p => p.region === 'Delhi').length;
   const tierACount = prospects.filter(p => p.tier === 'A').length;
   
   const nonePhoneListed = prospects.filter(
@@ -37,6 +40,9 @@ export function validateProspectsData(prospects: Prospect[] = allProspects): Val
   if (miraRoadCount !== APP_CONFIG.EXPECTED_MIRA_ROAD) {
     errors.push(`Mira Road-Vasai-Virar count is ${miraRoadCount}, expected ${APP_CONFIG.EXPECTED_MIRA_ROAD}`);
   }
+  if (delhiCount !== APP_CONFIG.EXPECTED_DELHI) {
+    errors.push(`Delhi count is ${delhiCount}, expected ${APP_CONFIG.EXPECTED_DELHI}`);
+  }
   if (tierACount !== APP_CONFIG.EXPECTED_TIER_A) {
     errors.push(`Tier A count is ${tierACount}, expected ${APP_CONFIG.EXPECTED_TIER_A}`);
   }
@@ -47,6 +53,7 @@ export function validateProspectsData(prospects: Prospect[] = allProspects): Val
     chandigarhTricity: chandigarhCount,
     hyderabad: hyderabadCount,
     miraRoadVasaiVirar: miraRoadCount,
+    delhi: delhiCount,
     tierA: tierACount,
     hasPhone: hasPhoneCount,
     noneListedPhone: nonePhoneListed,

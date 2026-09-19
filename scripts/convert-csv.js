@@ -41,7 +41,7 @@ function parseCSV(text) {
   return rows;
 }
 
-const csvPath = path.join(__dirname, '..', 'Netqorix_All_Prospects_913.csv');
+const csvPath = path.join(__dirname, '..', 'Netqorix_All_Prospects_1222.csv');
 const rawContent = fs.readFileSync(csvPath, 'utf8');
 const allRows = parseCSV(rawContent);
 
@@ -51,8 +51,8 @@ console.log('Detected Header Columns (' + header.length + '):', header);
 const dataRows = allRows.slice(1);
 console.log('Total data rows:', dataRows.length);
 
-if (dataRows.length !== 913) {
-  throw new Error(`Expected exactly 913 data rows, got ${dataRows.length}`);
+if (dataRows.length !== 1222) {
+  throw new Error(`Expected exactly 1222 data rows, got ${dataRows.length}`);
 }
 
 const prospects = dataRows.map((r, idx) => {
@@ -87,10 +87,12 @@ const prospects = dataRows.map((r, idx) => {
 const chandigarh = prospects.filter(p => p.region === 'Chandigarh Tricity');
 const hyderabad = prospects.filter(p => p.region === 'Hyderabad');
 const miraRoad = prospects.filter(p => p.region === 'Mira Road-Vasai-Virar');
+const delhi = prospects.filter(p => p.region === 'Delhi');
 
 console.log('Chandigarh count:', chandigarh.length);
 console.log('Hyderabad count:', hyderabad.length);
 console.log('Mira Road count:', miraRoad.length);
+console.log('Delhi count:', delhi.length);
 
 const tierACount = prospects.filter(p => p.tier === 'A').length;
 console.log('Tier A count:', tierACount);
@@ -99,7 +101,8 @@ console.log('Tier A count:', tierACount);
 if (chandigarh.length !== 307) throw new Error(`Chandigarh count mismatch: ${chandigarh.length} != 307`);
 if (hyderabad.length !== 302) throw new Error(`Hyderabad count mismatch: ${hyderabad.length} != 302`);
 if (miraRoad.length !== 304) throw new Error(`Mira Road count mismatch: ${miraRoad.length} != 304`);
-if (tierACount !== 189) throw new Error(`Tier A count mismatch: ${tierACount} != 189`);
+if (delhi.length !== 309) throw new Error(`Delhi count mismatch: ${delhi.length} != 309`);
+if (tierACount !== 236) throw new Error(`Tier A count mismatch: ${tierACount} != 236`);
 
 const outDir = path.join(__dirname, '..', 'src', 'data');
 if (!fs.existsSync(outDir)) {
@@ -115,19 +118,22 @@ function writeRegionFile(filename, varName, data) {
 writeRegionFile('prospectsChandigarh.ts', 'prospectsChandigarh', chandigarh);
 writeRegionFile('prospectsHyderabad.ts', 'prospectsHyderabad', hyderabad);
 writeRegionFile('prospectsMiraRoad.ts', 'prospectsMiraRoad', miraRoad);
+writeRegionFile('prospectsDelhi.ts', 'prospectsDelhi', delhi);
 
 // Write prospects.ts which merges them and includes the validation logic
 const aggregatorContent = `import type { Prospect, ValidationSummary } from '../types/prospect';
 import { prospectsChandigarh } from './prospectsChandigarh';
 import { prospectsHyderabad } from './prospectsHyderabad';
 import { prospectsMiraRoad } from './prospectsMiraRoad';
+import { prospectsDelhi } from './prospectsDelhi';
 import { APP_CONFIG } from '../config';
 
-// All 913 prospects strictly merged in original order without truncation or omission
+// All 1222 prospects strictly merged in original order without truncation or omission
 export const allProspects: Prospect[] = [
   ...prospectsChandigarh,
   ...prospectsHyderabad,
-  ...prospectsMiraRoad
+  ...prospectsMiraRoad,
+  ...prospectsDelhi
 ];
 
 export function validateProspectsData(prospects: Prospect[] = allProspects): ValidationSummary {
@@ -137,6 +143,7 @@ export function validateProspectsData(prospects: Prospect[] = allProspects): Val
   const chandigarhCount = prospects.filter(p => p.region === 'Chandigarh Tricity').length;
   const hyderabadCount = prospects.filter(p => p.region === 'Hyderabad').length;
   const miraRoadCount = prospects.filter(p => p.region === 'Mira Road-Vasai-Virar').length;
+  const delhiCount = prospects.filter(p => p.region === 'Delhi').length;
   const tierACount = prospects.filter(p => p.tier === 'A').length;
   
   const nonePhoneListed = prospects.filter(
@@ -156,6 +163,9 @@ export function validateProspectsData(prospects: Prospect[] = allProspects): Val
   if (miraRoadCount !== APP_CONFIG.EXPECTED_MIRA_ROAD) {
     errors.push(\`Mira Road-Vasai-Virar count is \${miraRoadCount}, expected \${APP_CONFIG.EXPECTED_MIRA_ROAD}\`);
   }
+  if (delhiCount !== APP_CONFIG.EXPECTED_DELHI) {
+    errors.push(\`Delhi count is \${delhiCount}, expected \${APP_CONFIG.EXPECTED_DELHI}\`);
+  }
   if (tierACount !== APP_CONFIG.EXPECTED_TIER_A) {
     errors.push(\`Tier A count is \${tierACount}, expected \${APP_CONFIG.EXPECTED_TIER_A}\`);
   }
@@ -166,6 +176,7 @@ export function validateProspectsData(prospects: Prospect[] = allProspects): Val
     chandigarhTricity: chandigarhCount,
     hyderabad: hyderabadCount,
     miraRoadVasaiVirar: miraRoadCount,
+    delhi: delhiCount,
     tierA: tierACount,
     hasPhone: hasPhoneCount,
     noneListedPhone: nonePhoneListed,

@@ -91,7 +91,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   Netqorix <span className="text-brand-600 dark:text-brand-400 font-medium">Prospects</span>
                 </span>
                 <span className="hidden sm:block text-[10px] text-slate-500 dark:text-slate-400 -mt-1 tracking-wider uppercase font-mono">
-                  913 Sales Leads
+                  1,222 Sales Leads
                 </span>
               </div>
             </div>
