@@ -14,11 +14,14 @@ import {
   Layers,
   CheckCircle,
   Clock,
+  Globe,
   ArrowUpRight
 } from 'lucide-react';
 import type { Prospect } from '../types/prospect';
 import { useTracking } from '../context/TrackingContext';
 import { formatINR, isPhoneAvailable } from '../utils/formatters';
+import { getWebsiteGroup } from '../utils/websiteResearch';
+import { RESEARCH_CHECKED_ON, RESEARCH_TOTALS } from '../data/websiteResearch';
 
 interface DashboardViewProps {
   prospects: Prospect[];
@@ -30,6 +33,7 @@ interface DashboardViewProps {
     segment?: string;
     package?: string;
     phoneFilter?: string;
+    websiteFilter?: string;
   }) => void;
 }
 
@@ -49,6 +53,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const nonePhone = prospects.filter((p) => !isPhoneAvailable(p.phone));
 
   const totalPipelineINR = prospects.reduce((acc, p) => acc + (p.dealValue || 0), 0);
+
+  // Website research outcomes (20 Sep 2026 export, 913 of the leads)
+  const noWebsiteLeads = prospects.filter((p) => getWebsiteGroup(p) === 'none-found');
+  const hasWebsiteLeads = prospects.filter((p) => getWebsiteGroup(p) === 'has-website');
+  const notResearchedLeads = prospects.filter((p) => getWebsiteGroup(p) === 'not-researched');
+  const researchedCount = totalLeads - notResearchedLeads.length;
+  const noWebsitePipelineINR = noWebsiteLeads.reduce((acc, p) => acc + (p.dealValue || 0), 0);
 
   // Sales Tracking metrics from localStorage
   const trackedStatuses = Object.values(trackingMap);
@@ -93,6 +104,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <Award className="w-3.5 h-3.5" />
             <span>High-Velocity Prospecting Pipeline</span>
           </div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 mb-2 ml-0 sm:ml-2">
+            <Globe className="w-3.5 h-3.5" />
+            <span>
+              {noWebsiteLeads.length} of {researchedCount} checked leads have no website ·{' '}
+              {RESEARCH_CHECKED_ON}
+            </span>
+          </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
             Netqorix Prospects Command Center
           </h1>
@@ -117,7 +135,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
       </div>
 
       {/* KPI Stat Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Total Leads & Tier Breakdown */}
         <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group hover:border-brand-500/40 transition-all">
           <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-3">
@@ -195,6 +213,51 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             >
               — {nonePhone.length} None Listed
             </button>
+          </div>
+        </div>
+
+        {/* Website Gap (from the website research export) */}
+        <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm relative overflow-hidden group hover:border-emerald-500/40 transition-all">
+          <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-3">
+            <span className="text-xs font-bold uppercase tracking-wider">No Website Found</span>
+            <div className="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
+              <Globe className="w-5 h-5" />
+            </div>
+          </div>
+          <div className="text-3xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+            {noWebsiteLeads.length}
+            <span className="text-sm font-normal text-slate-400 ml-1.5">
+              of {researchedCount} checked
+            </span>
+          </div>
+          <div className="mt-3 flex items-center justify-between text-xs">
+            <button
+              onClick={() => onNavigateToFilter({ websiteFilter: 'none-found' })}
+              className="text-emerald-600 dark:text-emerald-400 hover:underline font-semibold"
+            >
+              ✓ {formatINR(noWebsitePipelineINR)} open
+            </button>
+            <button
+              onClick={() => onNavigateToFilter({ websiteFilter: 'has-website' })}
+              className="text-slate-500 dark:text-slate-400 hover:underline font-semibold"
+            >
+              {hasWebsiteLeads.length} already online
+            </button>
+          </div>
+          <div className="mt-2 text-[10px] text-slate-400">
+            Checked {RESEARCH_CHECKED_ON} • {RESEARCH_TOTALS.withOtherLink} leads have only a
+            third-party link
+            {notResearchedLeads.length > 0 && (
+              <>
+                {' • '}
+                <button
+                  onClick={() => onNavigateToFilter({ websiteFilter: 'not-researched' })}
+                  className="hover:underline font-semibold"
+                >
+                  {notResearchedLeads.length} not researched
+                </button>
+              </>
+            )}
           </div>
         </div>
 

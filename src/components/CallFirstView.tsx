@@ -12,6 +12,7 @@ import {
   Search,
   ArrowRight,
   TrendingUp,
+  Globe,
   Award
 } from 'lucide-react';
 import type { Prospect, LeadStatus } from '../types/prospect';
@@ -23,6 +24,12 @@ import {
   isPhoneAvailable
 } from '../utils/formatters';
 import { evaluateCallWindow } from '../utils/callWindow';
+import {
+  getWebsiteResearch,
+  getWebsiteGroup,
+  WEBSITE_GROUP_BADGE,
+  WEBSITE_GROUP_SHORT
+} from '../utils/websiteResearch';
 import { Pagination } from './Pagination';
 import { APP_CONFIG } from '../config';
 
@@ -219,6 +226,8 @@ export const CallFirstView: React.FC<CallFirstViewProps> = ({
             const callWindow = evaluateCallWindow(lead.bestCallWindow, lead.segment);
             const telUrl = getTelUrl(lead.phone);
             const waUrl = getWhatsAppUrl(lead.phone);
+            const research = getWebsiteResearch(lead);
+            const websiteGroup = getWebsiteGroup(lead);
 
             return (
               <div
@@ -241,6 +250,13 @@ export const CallFirstView: React.FC<CallFirstViewProps> = ({
                       </span>
                       <span className="font-mono text-xs text-slate-400">
                         #{lead.rank}
+                      </span>
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${WEBSITE_GROUP_BADGE[websiteGroup]}`}
+                        title={research ? `${research.status} — ${research.note}` : 'Not covered by the website research export'}
+                      >
+                        <Globe className="w-2.5 h-2.5" />
+                        <span>{WEBSITE_GROUP_SHORT[websiteGroup]}</span>
                       </span>
                     </div>
 
