@@ -62,6 +62,7 @@ export const App: React.FC = () => {
     segment?: string;
     package?: string;
     phoneFilter?: string;
+    websiteFilter?: string;
   }) => {
     setDrillFilters({
       region: filters.region || 'all',
@@ -70,7 +71,8 @@ export const App: React.FC = () => {
       tier: filters.tier || 'all',
       segment: filters.segment || 'all',
       package: filters.package || 'all',
-      phoneFilter: (filters.phoneFilter as any) || 'all'
+      phoneFilter: (filters.phoneFilter as any) || 'all',
+      websiteFilter: filters.websiteFilter || 'all'
     });
     setActiveTab('prospects');
   };

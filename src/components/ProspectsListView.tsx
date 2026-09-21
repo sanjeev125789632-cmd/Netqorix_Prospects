@@ -11,6 +11,7 @@ import {
   ChevronDown,
   ArrowUpDown,
   LayoutGrid,
+  Globe,
   Table as TableIcon,
   Sparkles,
   SlidersHorizontal,
@@ -27,6 +28,14 @@ import {
   truncate
 } from '../utils/formatters';
 import { evaluateCallWindow } from '../utils/callWindow';
+import {
+  getWebsiteResearch,
+  getWebsiteGroup,
+  matchesWebsiteFilter,
+  WEBSITE_GROUP_BADGE,
+  WEBSITE_GROUP_LABEL,
+  WEBSITE_GROUP_SHORT
+} from '../utils/websiteResearch';
 import { Pagination } from './Pagination';
 import { APP_CONFIG } from '../config';
 
@@ -46,6 +55,7 @@ export interface FilterState {
   category: string;
   package: string;
   phoneFilter: string; // 'all' | 'has' | 'none'
+  websiteFilter: string; // 'all' | WebsiteGroup | 'other-link'
   status: string; // 'all' | LeadStatus
   sortBy: 'fit' | 'rank' | 'rating' | 'reviews' | 'dealValue';
   sortOrder: 'asc' | 'desc';
@@ -68,6 +78,7 @@ export const ProspectsListView: React.FC<ProspectsListViewProps> = ({
     category: 'all',
     package: 'all',
     phoneFilter: 'all',
+    websiteFilter: 'all',
     status: 'all',
     sortBy: 'fit',
     sortOrder: 'desc',
@@ -148,6 +159,9 @@ export const ProspectsListView: React.FC<ProspectsListViewProps> = ({
       if (filters.phoneFilter === 'has' && !isPhoneAvailable(p.phone)) return false;
       if (filters.phoneFilter === 'none' && isPhoneAvailable(p.phone)) return false;
 
+      // Website research outcome
+      if (!matchesWebsiteFilter(p, filters.websiteFilter)) return false;
+
       // Tracking Status
       if (filters.status !== 'all') {
         const currentStatus = trackingMap[p.id]?.status || 'New';
@@ -204,6 +218,7 @@ export const ProspectsListView: React.FC<ProspectsListViewProps> = ({
     if (filters.category !== 'all') count++;
     if (filters.package !== 'all') count++;
     if (filters.phoneFilter !== 'all') count++;
+    if (filters.websiteFilter !== 'all') count++;
     if (filters.status !== 'all') count++;
     return count;
   }, [filters]);
@@ -219,6 +234,7 @@ export const ProspectsListView: React.FC<ProspectsListViewProps> = ({
       category: 'all',
       package: 'all',
       phoneFilter: 'all',
+      websiteFilter: 'all',
       status: 'all',
       sortBy: 'fit',
       sortOrder: 'desc'
@@ -357,7 +373,7 @@ export const ProspectsListView: React.FC<ProspectsListViewProps> = ({
 
         {/* Row 2: Filter Selects (Collapsible or always visible on desktop) */}
         <div
-          className={`grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2 pt-3 border-t border-slate-200/80 dark:border-slate-800/80 mt-3 ${
+          className={`grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 pt-3 border-t border-slate-200/80 dark:border-slate-800/80 mt-3 ${
             showFilterDrawer ? 'block' : 'hidden lg:grid'
           }`}
         >
@@ -493,6 +509,28 @@ export const ProspectsListView: React.FC<ProspectsListViewProps> = ({
             </select>
           </div>
 
+          {/* Website Research Outcome */}
+          <div>
+            <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">
+              Website
+            </label>
+            <select
+              value={filters.websiteFilter}
+              onChange={(e) => {
+                setFilters({ ...filters, websiteFilter: e.target.value });
+                setCurrentPage(1);
+              }}
+              className="w-full py-1.5 px-2 bg-slate-50 dark:bg-slate-800/80 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-800 dark:text-slate-200"
+            >
+              <option value="all">All Leads</option>
+              <option value="none-found">No Website Found</option>
+              <option value="has-website">Has Website</option>
+              <option value="parked">Parked Domain</option>
+              <option value="other-link">Has Other Link Only</option>
+              <option value="not-researched">Not Researched</option>
+            </select>
+          </div>
+
           {/* Sales Status */}
           <div>
             <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1">
@@ -558,6 +596,20 @@ export const ProspectsListView: React.FC<ProspectsListViewProps> = ({
                 />
               </span>
             )}
+            {filters.websiteFilter !== 'all' && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-medium">
+                Website:{' '}
+                {filters.websiteFilter === 'other-link'
+                  ? 'Other link only'
+                  : WEBSITE_GROUP_LABEL[
+                      filters.websiteFilter as keyof typeof WEBSITE_GROUP_LABEL
+                    ]}
+                <X
+                  className="w-3 h-3 cursor-pointer"
+                  onClick={() => setFilters({ ...filters, websiteFilter: 'all' })}
+                />
+              </span>
+            )}
             {filters.status !== 'all' && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-cyan-50 dark:bg-cyan-950/60 text-cyan-700 dark:text-cyan-300 font-medium">
                 Status: {filters.status}
@@ -610,6 +662,7 @@ export const ProspectsListView: React.FC<ProspectsListViewProps> = ({
                   <th className="py-3 px-3 w-20 text-center">Fit</th>
                   <th className="py-3 px-3">Location</th>
                   <th className="py-3 px-3">Contact</th>
+                  <th className="py-3 px-3">Website</th>
                   <th className="py-3 px-3 text-center">Reviews</th>
                   <th className="py-3 px-3">Value</th>
                   <th className="py-3 px-3">Call Window</th>
@@ -623,6 +676,8 @@ export const ProspectsListView: React.FC<ProspectsListViewProps> = ({
                   const callWindow = evaluateCallWindow(lead.bestCallWindow, lead.segment);
                   const telUrl = getTelUrl(lead.phone);
                   const waUrl = getWhatsAppUrl(lead.phone);
+                  const research = getWebsiteResearch(lead);
+                  const websiteGroup = getWebsiteGroup(lead);
 
                   return (
                     <tr
@@ -695,6 +750,28 @@ export const ProspectsListView: React.FC<ProspectsListViewProps> = ({
                           <span className="text-slate-400 italic text-[11px]">
                             — none listed
                           </span>
+                        )}
+                      </td>
+
+                      {/* Website Research Outcome */}
+                      <td className="py-3 px-3">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${WEBSITE_GROUP_BADGE[websiteGroup]}`}
+                          title={research ? `${research.status} — ${research.note}` : 'Not covered by the website research export'}
+                        >
+                          <Globe className="w-2.5 h-2.5" />
+                          <span>{WEBSITE_GROUP_SHORT[websiteGroup]}</span>
+                        </span>
+                        {research?.websiteUrl && (
+                          <a
+                            href={research.websiteUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="block mt-0.5 text-[10px] text-brand-600 dark:text-brand-400 hover:underline truncate max-w-[130px]"
+                          >
+                            {research.websiteUrl.replace(/^https?:\/\/(www\.)?/, '')}
+                          </a>
                         )}
                       </td>
 
@@ -812,6 +889,8 @@ export const ProspectsListView: React.FC<ProspectsListViewProps> = ({
               const callWindow = evaluateCallWindow(lead.bestCallWindow, lead.segment);
               const telUrl = getTelUrl(lead.phone);
               const waUrl = getWhatsAppUrl(lead.phone);
+              const research = getWebsiteResearch(lead);
+              const websiteGroup = getWebsiteGroup(lead);
 
               return (
                 <div
@@ -840,6 +919,25 @@ export const ProspectsListView: React.FC<ProspectsListViewProps> = ({
                       </div>
                       <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                         {lead.category} • {lead.locality}
+                      </div>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${WEBSITE_GROUP_BADGE[websiteGroup]}`}
+                        >
+                          <Globe className="w-2.5 h-2.5" />
+                          <span>{WEBSITE_GROUP_SHORT[websiteGroup]}</span>
+                        </span>
+                        {research?.websiteUrl && (
+                          <a
+                            href={research.websiteUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-[10px] text-brand-600 dark:text-brand-400 hover:underline truncate max-w-[180px]"
+                          >
+                            {research.websiteUrl.replace(/^https?:\/\/(www\.)?/, '')}
+                          </a>
+                        )}
                       </div>
                     </div>
 

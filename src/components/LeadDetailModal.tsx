@@ -17,6 +17,9 @@ import {
   Sparkles,
   Star,
   Activity,
+  Globe,
+  Search,
+  Link2,
   Award
 } from 'lucide-react';
 import type { Prospect, LeadStatus } from '../types/prospect';
@@ -28,6 +31,13 @@ import {
   isPhoneAvailable
 } from '../utils/formatters';
 import { evaluateCallWindow } from '../utils/callWindow';
+import {
+  getWebsiteResearch,
+  getWebsiteGroup,
+  WEBSITE_GROUP_BADGE,
+  WEBSITE_GROUP_LABEL
+} from '../utils/websiteResearch';
+import { RESEARCH_CHECKED_ON, RESEARCH_DISCLAIMER } from '../data/websiteResearch';
 
 interface LeadDetailModalProps {
   prospect: Prospect | null;
@@ -110,6 +120,8 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
   };
 
   const callWindowInfo = evaluateCallWindow(prospect.bestCallWindow, prospect.segment);
+  const research = getWebsiteResearch(prospect);
+  const websiteGroup = getWebsiteGroup(prospect);
   const telUrl = getTelUrl(prospect.phone);
   const waUrl = getWhatsAppUrl(prospect.phone);
 
@@ -282,6 +294,87 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
             <p className="text-sm sm:text-base font-medium text-slate-800 dark:text-slate-100 leading-relaxed italic bg-white/80 dark:bg-slate-900/80 p-3.5 rounded-xl border border-brand-200/60 dark:border-brand-900/60">
               "{prospect.pitchAngle}"
             </p>
+          </div>
+
+          {/* Website Research Findings (20 Sep 2026 export) */}
+          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
+                <Globe className="w-3.5 h-3.5 text-brand-500" />
+                <span>Website Research</span>
+              </div>
+              <span
+                className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border ${WEBSITE_GROUP_BADGE[websiteGroup]}`}
+              >
+                {research ? research.status : WEBSITE_GROUP_LABEL[websiteGroup]}
+              </span>
+            </div>
+
+            {research ? (
+              <>
+                {research.websiteUrl && (
+                  <a
+                    href={research.websiteUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-sm font-semibold text-brand-600 dark:text-brand-400 hover:underline break-all"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5 shrink-0" />
+                    <span>{research.websiteUrl}</span>
+                  </a>
+                )}
+
+                {research.otherLinkUrl && (
+                  <a
+                    href={research.otherLinkUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-medium text-slate-700 dark:text-slate-300 hover:underline break-all"
+                  >
+                    <Link2 className="w-3.5 h-3.5 shrink-0 text-slate-400" />
+                    <span>
+                      <strong>{research.otherLinkType || 'Other link'}:</strong>{' '}
+                      {research.otherLinkUrl}
+                    </span>
+                  </a>
+                )}
+
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                  {research.note}
+                </p>
+
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-slate-500 dark:text-slate-400">
+                  <span>
+                    Match: <strong className="text-slate-700 dark:text-slate-200">{research.match}</strong>
+                  </span>
+                  <span>
+                    Checked: <strong className="text-slate-700 dark:text-slate-200">{RESEARCH_CHECKED_ON}</strong>
+                  </span>
+                  {research.evidenceUrl && (
+                    <a
+                      href={research.evidenceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-brand-600 dark:text-brand-400 hover:underline font-semibold"
+                    >
+                      <Search className="w-3 h-3" />
+                      <span>Evidence</span>
+                    </a>
+                  )}
+                </div>
+
+                {websiteGroup === 'none-found' && (
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400 italic">
+                    {RESEARCH_DISCLAIMER}
+                  </p>
+                )}
+              </>
+            ) : (
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                This region was not part of the {RESEARCH_CHECKED_ON} website research export, so no
+                website check has been recorded for this lead.
+              </p>
+            )}
           </div>
 
           {/* Best Call Window Card with Live Status Badge */}

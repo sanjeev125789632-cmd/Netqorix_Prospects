@@ -1,4 +1,5 @@
 import type { Prospect, LeadTracking } from '../types/prospect';
+import { getWebsiteResearch, WEBSITE_GROUP_LABEL } from './websiteResearch';
 
 function escapeCsvCell(val: any): string {
   if (val === null || val === undefined) return '""';
@@ -35,6 +36,14 @@ export function exportProspectsToCsv(
     'Rating pts',
     'Reach',
     'Maps URL',
+    // Website research columns (20 Sep 2026 export)
+    'Website status',
+    'Website URL',
+    'Other link type',
+    'Other link URL',
+    'Research match',
+    'Research note',
+    'Research evidence URL',
     // Sales Tracking columns
     'Status',
     'Captured Email',
@@ -46,6 +55,7 @@ export function exportProspectsToCsv(
 
   const rows = prospects.map((p) => {
     const t = trackingMap[p.id];
+    const r = getWebsiteResearch(p);
     return [
       escapeCsvCell(p.region),
       escapeCsvCell(p.rank),
@@ -69,6 +79,14 @@ export function exportProspectsToCsv(
       escapeCsvCell(p.ratingPts),
       escapeCsvCell(p.reach),
       escapeCsvCell(p.mapsUrl),
+      // Website research
+      escapeCsvCell(r?.status || WEBSITE_GROUP_LABEL['not-researched']),
+      escapeCsvCell(r?.websiteUrl || ''),
+      escapeCsvCell(r?.otherLinkType || ''),
+      escapeCsvCell(r?.otherLinkUrl || ''),
+      escapeCsvCell(r?.match || ''),
+      escapeCsvCell(r?.note || ''),
+      escapeCsvCell(r?.evidenceUrl || ''),
       // Tracking
       escapeCsvCell(t?.status || 'New'),
       escapeCsvCell(t?.email || ''),

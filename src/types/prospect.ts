@@ -26,6 +26,20 @@ export interface Prospect {
   mapsUrl: string;
 }
 
+export type WebsiteGroup = 'has-website' | 'parked' | 'none-found' | 'not-researched';
+
+export interface WebsiteResearch {
+  status: string; // e.g. "Confirmed website", "No convincing website found"
+  websiteUrl: string;
+  otherLinkType: string; // e.g. "WhatsApp contact", "Booking page"
+  otherLinkUrl: string;
+  evidenceUrl: string;
+  match: string; // How the listing was tied to the lead
+  note: string; // Researcher note
+  mapsUrl: string;
+  group: WebsiteGroup;
+}
+
 export type LeadStatus =
   | 'New'
   | 'Called'

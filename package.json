@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "node node_modules/typescript/bin/tsc && node node_modules/vite/bin/vite.js build",
     "preview": "vite preview",
-    "generate-data": "node scripts/convert-csv.js"
+    "generate-data": "node scripts/convert-csv.js",
+    "generate-research": "node scripts/convert-research-csv.js"
   },
   "dependencies": {
     "clsx": "^2.1.1",
