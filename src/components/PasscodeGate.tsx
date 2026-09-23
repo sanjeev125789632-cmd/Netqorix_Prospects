@@ -47,7 +47,7 @@ export const PasscodeGate: React.FC<PasscodeGateProps> = ({ onAuthenticated }) =
             Enterprise Sales Prospecting Portal
           </p>
           <div className="mt-2 inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-brand-950/80 border border-brand-800/60 text-brand-300">
-            <span>Confidential Prospect Database</span>
+            <span>Prospect Workspace</span>
           </div>
         </div>
 
@@ -103,7 +103,7 @@ export const PasscodeGate: React.FC<PasscodeGateProps> = ({ onAuthenticated }) =
         </form>
 
         <div className="mt-8 pt-6 border-t border-slate-800/80 text-center text-xs text-slate-500">
-          1,222 Validated Prospects • 4 Regions • Tier A Prioritization
+          {APP_CONFIG.EXPECTED_TOTAL.toLocaleString('en-IN')} Prospects • {Object.keys(APP_CONFIG.EXPECTED_COUNTS).length} Regions • Tier A Prioritization
         </div>
       </div>
     </div>

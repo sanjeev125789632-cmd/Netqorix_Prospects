@@ -11,10 +11,17 @@ export const APP_CONFIG = {
   ITEMS_PER_PAGE: 50,
   
   // Validation targets
-  EXPECTED_TOTAL: 1222,
-  EXPECTED_CHANDIGARH: 307,
-  EXPECTED_HYDERABAD: 302,
-  EXPECTED_MIRA_ROAD: 304,
-  EXPECTED_DELHI: 309,
-  EXPECTED_TIER_A: 236,
+  EXPECTED_COUNTS: {
+    'Chandigarh Tricity': 307,
+    Hyderabad: 302,
+    'Mira Road-Vasai-Virar': 304,
+    Delhi: 309,
+    'Bankura & Durgapur': 300,
+    'Jammu & Kashmir': 301,
+    'North East': 300,
+    'International Round 5': 20,
+    'Round 6 National': 36,
+    'Round 6 International': 27
+  } as Record<string, number>,
+  EXPECTED_TOTAL: 2206,
 };

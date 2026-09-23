@@ -3,25 +3,27 @@ import { prospectsChandigarh } from './prospectsChandigarh';
 import { prospectsHyderabad } from './prospectsHyderabad';
 import { prospectsMiraRoad } from './prospectsMiraRoad';
 import { prospectsDelhi } from './prospectsDelhi';
+import { prospectsAdditional } from './prospectsAdditional';
 import { APP_CONFIG } from '../config';
 
-// All 1222 prospects strictly merged in original order without truncation or omission
+// Preserve original order and IDs for existing local tracking; append the five new batches.
 export const allProspects: Prospect[] = [
   ...prospectsChandigarh,
   ...prospectsHyderabad,
   ...prospectsMiraRoad,
-  ...prospectsDelhi
+  ...prospectsDelhi,
+  ...prospectsAdditional
 ];
 
 export function validateProspectsData(prospects: Prospect[] = allProspects): ValidationSummary {
   const errors: string[] = [];
   
   const total = prospects.length;
-  const chandigarhCount = prospects.filter(p => p.region === 'Chandigarh Tricity').length;
-  const hyderabadCount = prospects.filter(p => p.region === 'Hyderabad').length;
-  const miraRoadCount = prospects.filter(p => p.region === 'Mira Road-Vasai-Virar').length;
-  const delhiCount = prospects.filter(p => p.region === 'Delhi').length;
+  const regionCounts: Record<string, number> = {};
+  for (const p of prospects) regionCounts[p.region] = (regionCounts[p.region] || 0) + 1;
   const tierACount = prospects.filter(p => p.tier === 'A').length;
+  const ids = prospects.map(p => p.id);
+  if (new Set(ids).size !== ids.length) errors.push('Duplicate lead IDs found');
   
   const nonePhoneListed = prospects.filter(
     p => !p.phone || p.phone.includes('none') || p.phone.includes('—') || p.phone === '-'
@@ -31,29 +33,20 @@ export function validateProspectsData(prospects: Prospect[] = allProspects): Val
   if (total !== APP_CONFIG.EXPECTED_TOTAL) {
     errors.push(`Total prospects count is ${total}, expected ${APP_CONFIG.EXPECTED_TOTAL}`);
   }
-  if (chandigarhCount !== APP_CONFIG.EXPECTED_CHANDIGARH) {
-    errors.push(`Chandigarh Tricity count is ${chandigarhCount}, expected ${APP_CONFIG.EXPECTED_CHANDIGARH}`);
+  for (const [region, expected] of Object.entries(APP_CONFIG.EXPECTED_COUNTS)) {
+    if (regionCounts[region] !== expected) {
+      errors.push(`${region} count is ${regionCounts[region] || 0}, expected ${expected}`);
+    }
   }
-  if (hyderabadCount !== APP_CONFIG.EXPECTED_HYDERABAD) {
-    errors.push(`Hyderabad count is ${hyderabadCount}, expected ${APP_CONFIG.EXPECTED_HYDERABAD}`);
-  }
-  if (miraRoadCount !== APP_CONFIG.EXPECTED_MIRA_ROAD) {
-    errors.push(`Mira Road-Vasai-Virar count is ${miraRoadCount}, expected ${APP_CONFIG.EXPECTED_MIRA_ROAD}`);
-  }
-  if (delhiCount !== APP_CONFIG.EXPECTED_DELHI) {
-    errors.push(`Delhi count is ${delhiCount}, expected ${APP_CONFIG.EXPECTED_DELHI}`);
-  }
-  if (tierACount !== APP_CONFIG.EXPECTED_TIER_A) {
-    errors.push(`Tier A count is ${tierACount}, expected ${APP_CONFIG.EXPECTED_TIER_A}`);
+  for (const region of Object.keys(regionCounts)) {
+    if (!(region in APP_CONFIG.EXPECTED_COUNTS)) errors.push(`Unexpected region: ${region}`);
   }
 
   return {
     isValid: errors.length === 0,
     total,
-    chandigarhTricity: chandigarhCount,
-    hyderabad: hyderabadCount,
-    miraRoadVasaiVirar: miraRoadCount,
-    delhi: delhiCount,
+    regionCounts,
+    expectedCounts: APP_CONFIG.EXPECTED_COUNTS,
     tierA: tierACount,
     hasPhone: hasPhoneCount,
     noneListedPhone: nonePhoneListed,

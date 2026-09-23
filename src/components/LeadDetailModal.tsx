@@ -158,7 +158,7 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
               <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-2 mt-0.5 truncate">
                 <span>{prospect.category}</span>
                 <span>•</span>
-                <span>{prospect.locality}, {prospect.city}</span>
+                <span>{prospect.locality === prospect.city ? prospect.city : `${prospect.locality}, ${prospect.city}`}{prospect.market && prospect.market !== 'India' ? `, ${prospect.market}` : ''}</span>
                 <span>•</span>
                 <span className="font-semibold text-brand-600 dark:text-brand-400">{prospect.region}</span>
               </div>
@@ -369,6 +369,13 @@ export const LeadDetailModal: React.FC<LeadDetailModalProps> = ({
                   </p>
                 )}
               </>
+            ) : prospect.sourceFile ? (
+              <div className="text-xs text-slate-600 dark:text-slate-300 space-y-1">
+                <p>Source spreadsheet: {prospect.sourceFile} · collected {prospect.sourceDate}. Its Maps listing had no website button at collection. Confirm the current listing and business website before outreach.</p>
+                {prospect.address && <p>Listed address: {prospect.address}</p>}
+                {prospect.market && <p>Market: {prospect.market}{prospect.country ? ` (${prospect.country})` : ''}</p>}
+                {prospect.sourceEmail && <p>Listed email: {prospect.sourceEmail}</p>}
+              </div>
             ) : (
               <p className="text-xs text-slate-500 dark:text-slate-400">
                 This region was not part of the {RESEARCH_CHECKED_ON} website research export, so no

@@ -11,7 +11,7 @@ export function getWebsiteResearch(prospect: Prospect): WebsiteResearch | undefi
 }
 
 export function getWebsiteGroup(prospect: Prospect): WebsiteGroup {
-  return getWebsiteResearch(prospect)?.group || 'not-researched';
+  return getWebsiteResearch(prospect)?.group || (prospect.sourceFile ? 'maps-no-button' : 'not-researched');
 }
 
 export function isRegionResearched(region: string): boolean {
@@ -20,6 +20,7 @@ export function isRegionResearched(region: string): boolean {
 
 export const WEBSITE_GROUP_LABEL: Record<WebsiteGroup, string> = {
   'none-found': 'No website found',
+  'maps-no-button': 'No website button on Maps (source file)',
   'has-website': 'Has website',
   parked: 'Parked domain',
   'not-researched': 'Not researched'
@@ -28,6 +29,7 @@ export const WEBSITE_GROUP_LABEL: Record<WebsiteGroup, string> = {
 /** Short label for the dense table/card badges. */
 export const WEBSITE_GROUP_SHORT: Record<WebsiteGroup, string> = {
   'none-found': 'No site',
+  'maps-no-button': 'Maps: no site',
   'has-website': 'Has site',
   parked: 'Parked',
   'not-researched': 'Unchecked'
@@ -37,6 +39,8 @@ export const WEBSITE_GROUP_BADGE: Record<WebsiteGroup, string> = {
   // No website found is the strongest pitch signal, so it reads as the positive one
   'none-found':
     'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-300/70 dark:border-emerald-800',
+  'maps-no-button':
+    'bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border-amber-300/70 dark:border-amber-800',
   'has-website':
     'bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border-rose-300/70 dark:border-rose-800',
   parked:
@@ -50,5 +54,5 @@ export function matchesWebsiteFilter(prospect: Prospect, filter: string): boolea
   if (filter === 'all') return true;
   const research = getWebsiteResearch(prospect);
   if (filter === 'other-link') return Boolean(research?.otherLinkUrl);
-  return (research?.group || 'not-researched') === filter;
+  return getWebsiteGroup(prospect) === filter;
 }

@@ -169,10 +169,9 @@ export const CallFirstView: React.FC<CallFirstViewProps> = ({
             className="py-1.5 px-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-800 dark:text-slate-200 border-none cursor-pointer"
           >
             <option value="all">All Regions</option>
-            <option value="Chandigarh Tricity">Chandigarh Tricity</option>
-            <option value="Hyderabad">Hyderabad</option>
-            <option value="Mira Road-Vasai-Virar">Mira Road-Vasai-Virar</option>
-            <option value="Delhi">Delhi</option>
+            {Array.from(new Set(prospects.map(p => p.region))).sort().map(region => (
+              <option key={region} value={region}>{region}</option>
+            ))}
           </select>
 
           {/* Only in Window toggle */}

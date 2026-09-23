@@ -1,5 +1,5 @@
 import type { Prospect, LeadTracking } from '../types/prospect';
-import { getWebsiteResearch, WEBSITE_GROUP_LABEL } from './websiteResearch';
+import { getWebsiteResearch, getWebsiteGroup, WEBSITE_GROUP_LABEL } from './websiteResearch';
 
 function escapeCsvCell(val: any): string {
   if (val === null || val === undefined) return '""';
@@ -36,6 +36,12 @@ export function exportProspectsToCsv(
     'Rating pts',
     'Reach',
     'Maps URL',
+    'Address',
+    'Market',
+    'Country',
+    'Source file',
+    'Source date',
+    'Source email',
     // Website research columns (20 Sep 2026 export)
     'Website status',
     'Website URL',
@@ -79,8 +85,14 @@ export function exportProspectsToCsv(
       escapeCsvCell(p.ratingPts),
       escapeCsvCell(p.reach),
       escapeCsvCell(p.mapsUrl),
+      escapeCsvCell(p.address || ''),
+      escapeCsvCell(p.market || ''),
+      escapeCsvCell(p.country || ''),
+      escapeCsvCell(p.sourceFile || ''),
+      escapeCsvCell(p.sourceDate || ''),
+      escapeCsvCell(p.sourceEmail || ''),
       // Website research
-      escapeCsvCell(r?.status || WEBSITE_GROUP_LABEL['not-researched']),
+      escapeCsvCell(r?.status || WEBSITE_GROUP_LABEL[getWebsiteGroup(p)]),
       escapeCsvCell(r?.websiteUrl || ''),
       escapeCsvCell(r?.otherLinkType || ''),
       escapeCsvCell(r?.otherLinkUrl || ''),

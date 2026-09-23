@@ -28,6 +28,10 @@ export function getWhatsAppUrl(phone: string): string | null {
   if (!isPhoneAvailable(phone)) return null;
   // Extract all digits
   const rawDigits = phone.replace(/\D/g, '');
+  // Preserve explicitly international dialling prefixes; do not turn overseas numbers into +91.
+  if (phone.trim().startsWith('+')) {
+    return rawDigits.length >= 8 && rawDigits.length <= 15 ? `https://wa.me/${rawDigits}` : null;
+  }
   
   // If 11 digits starting with 0 (e.g. 09877962254), remove leading 0 -> 10 digits
   let tenDigits = rawDigits;
@@ -39,7 +43,7 @@ export function getWhatsAppUrl(phone: string): string | null {
     tenDigits = rawDigits.slice(-10);
   }
 
-  if (tenDigits.length < 10) {
+  if (tenDigits.length !== 10) {
     return null;
   }
 

@@ -58,7 +58,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const noWebsiteLeads = prospects.filter((p) => getWebsiteGroup(p) === 'none-found');
   const hasWebsiteLeads = prospects.filter((p) => getWebsiteGroup(p) === 'has-website');
   const notResearchedLeads = prospects.filter((p) => getWebsiteGroup(p) === 'not-researched');
-  const researchedCount = totalLeads - notResearchedLeads.length;
+  const mapsNoButtonLeads = prospects.filter((p) => getWebsiteGroup(p) === 'maps-no-button');
+  const researchedCount = totalLeads - notResearchedLeads.length - mapsNoButtonLeads.length;
   const noWebsitePipelineINR = noWebsiteLeads.reduce((acc, p) => acc + (p.dealValue || 0), 0);
 
   // Sales Tracking metrics from localStorage
@@ -115,8 +116,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             Netqorix Prospects Command Center
           </h1>
           <p className="text-slate-300 text-sm mt-1 max-w-2xl">
-            1,222 high-intent prospects across Chandigarh Tricity, Hyderabad, Mira Road-Vasai-Virar, and Delhi.
-            Track calls, log WhatsApp follow-ups, and accelerate deals.
+            {totalLeads.toLocaleString('en-IN')} prospects across {regionData.length} regions.
+            Track calls, log follow-ups, and review each source before outreach.
           </p>
         </div>
 
@@ -182,7 +183,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
           <div className="mt-3 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
             <span>Avg Lead: <strong>{formatINR(Math.round(totalPipelineINR / totalLeads))}</strong></span>
-            <span className="text-emerald-600 dark:text-emerald-400 font-medium">1,222 deals</span>
+            <span className="text-emerald-600 dark:text-emerald-400 font-medium">{totalLeads.toLocaleString('en-IN')} estimates</span>
           </div>
         </div>
 
@@ -247,6 +248,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="mt-2 text-[10px] text-slate-400">
             Checked {RESEARCH_CHECKED_ON} • {RESEARCH_TOTALS.withOtherLink} leads have only a
             third-party link
+            {' • '}
+            <button
+              onClick={() => onNavigateToFilter({ websiteFilter: 'maps-no-button' })}
+              className="hover:underline font-semibold"
+            >
+              {mapsNoButtonLeads.length} from newer Maps source lists
+            </button>
             {notResearchedLeads.length > 0 && (
               <>
                 {' • '}
@@ -288,7 +296,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <MapPin className="w-4 h-4 text-brand-600 dark:text-brand-400" />
               <span>Region Breakdown</span>
             </h2>
-            <span className="text-xs text-slate-400 font-mono">3 Regions</span>
+            <span className="text-xs text-slate-400 font-mono">{regionData.length} Regions</span>
           </div>
           <div className="space-y-3">
             {regionData.map((item) => {

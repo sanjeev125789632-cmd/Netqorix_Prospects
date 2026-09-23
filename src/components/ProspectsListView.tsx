@@ -130,6 +130,9 @@ export const ProspectsListView: React.FC<ProspectsListViewProps> = ({
           b.includes(query) ||
           c.includes(query) ||
           l.includes(query) ||
+          p.city.toLowerCase().includes(query) ||
+          (p.market || '').toLowerCase().includes(query) ||
+          (p.address || '').toLowerCase().includes(query) ||
           ph.includes(query);
         if (!match) return false;
       }
@@ -524,6 +527,7 @@ export const ProspectsListView: React.FC<ProspectsListViewProps> = ({
             >
               <option value="all">All Leads</option>
               <option value="none-found">No Website Found</option>
+              <option value="maps-no-button">Maps: No Website Button</option>
               <option value="has-website">Has Website</option>
               <option value="parked">Parked Domain</option>
               <option value="other-link">Has Other Link Only</option>
@@ -757,7 +761,7 @@ export const ProspectsListView: React.FC<ProspectsListViewProps> = ({
                       <td className="py-3 px-3">
                         <span
                           className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${WEBSITE_GROUP_BADGE[websiteGroup]}`}
-                          title={research ? `${research.status} — ${research.note}` : 'Not covered by the website research export'}
+                          title={research ? `${research.status} — ${research.note}` : lead.sourceFile ? `Maps source: ${lead.sourceFile}, ${lead.sourceDate}; verify current status` : 'Not covered by the website research export'}
                         >
                           <Globe className="w-2.5 h-2.5" />
                           <span>{WEBSITE_GROUP_SHORT[websiteGroup]}</span>

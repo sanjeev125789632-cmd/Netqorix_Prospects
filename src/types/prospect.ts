@@ -24,9 +24,15 @@ export interface Prospect {
   ratingPts: number;
   reach: number;
   mapsUrl: string;
+  sourceFile?: string;
+  sourceDate?: string;
+  address?: string;
+  market?: string;
+  country?: string;
+  sourceEmail?: string;
 }
 
-export type WebsiteGroup = 'has-website' | 'parked' | 'none-found' | 'not-researched';
+export type WebsiteGroup = 'has-website' | 'parked' | 'none-found' | 'maps-no-button' | 'not-researched';
 
 export interface WebsiteResearch {
   status: string; // e.g. "Confirmed website", "No convincing website found"
@@ -61,10 +67,8 @@ export interface LeadTracking {
 export interface ValidationSummary {
   isValid: boolean;
   total: number;
-  chandigarhTricity: number;
-  hyderabad: number;
-  miraRoadVasaiVirar: number;
-  delhi: number;
+  regionCounts: Record<string, number>;
+  expectedCounts: Record<string, number>;
   tierA: number;
   hasPhone: number;
   noneListedPhone: number;
