@@ -19,9 +19,10 @@ export const APP_CONFIG = {
     'Bankura & Durgapur': 300,
     'Jammu & Kashmir': 301,
     'North East': 300,
+    Kota: 224,
     'International Round 5': 20,
     'Round 6 National': 36,
     'Round 6 International': 27
   } as Record<string, number>,
-  EXPECTED_TOTAL: 2206,
+  EXPECTED_TOTAL: 2430,
 };
