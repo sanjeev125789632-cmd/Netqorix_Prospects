@@ -1,6 +1,6 @@
 # Netqorix Prospects
 
-React/Vite sales prospect workspace. The generated site includes 2,206 business leads in ten region groups. Sales notes, statuses and follow-up dates are stored in the current browser's localStorage; use the JSON backup in the app before clearing browser data.
+React/Vite sales prospect workspace. The generated site includes 2,430 business leads in eleven region groups. Sales notes, statuses and follow-up dates are stored in the current browser's localStorage; use the JSON backup in the app before clearing browser data.
 
 ## Data sources
 
@@ -15,6 +15,13 @@ The 984 additional records are generated into `src/data/prospectsAdditional.ts` 
 | Netqorix_NorthEast_Prospects_1.xlsx | 300 | 21 Sep 2026 |
 | Netqorix_International_Round5.xlsx | 20 | 13 Sep 2026 |
 | Netqorix_Round6_National_and_International.xlsx | 63 | 18 Sep 2026 |
+
+The 224 Kota records are generated into `src/data/prospectsKota.ts` from `Netqorix_Kota_Prospects.xlsx`, collected 24 September 2026. Regenerate that source file with:
+
+```bash
+python scripts/import-prospect-workbooks.py --kota /path/to/Netqorix_Kota_Prospects.xlsx
+npm run build
+```
 
 The four corresponding Chandigarh, Hyderabad, Mira Road and Delhi workbooks match the existing records by rank and business name. `Call First`, national and international sheets in the workbooks are views of their main leads, not separate records. Round 6 is split into 36 national and 27 international leads in the app.
 
