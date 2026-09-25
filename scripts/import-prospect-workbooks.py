@@ -1,6 +1,7 @@
-"""Regenerate the five added lead batches from the supplied XLSX workbooks.
+"""Regenerate added lead batches from the supplied XLSX workbooks.
 
 Usage: python scripts/import-prospect-workbooks.py /path/to/workbooks
+       python scripts/import-prospect-workbooks.py --kota /path/to/Netqorix_Kota_Prospects.xlsx
 Requires openpyxl. The four original batches retain their existing generated files
 and IDs so browser-local tracking survives this import.
 """
@@ -20,6 +21,8 @@ SOURCES = [
     ("Netqorix_International_Round5.xlsx", "Overseas Leads", "International Round 5", "international-5", "2026-09-13"),
     ("Netqorix_Round6_National_and_International.xlsx", "All Leads", None, "round-6", "2026-09-18"),
 ]
+
+KOTA_SOURCE = ("Leads", "Kota", "kota", "2026-09-24")
 
 
 def text(value):
@@ -124,5 +127,26 @@ def main(directory):
     print(f"Wrote {output}: {len(all_leads)} new leads")
 
 
+def main_kota(workbook_path):
+    sheet, region, slug, date = KOTA_SOURCE
+    leads = import_source(workbook_path.parent, workbook_path.name, sheet, region, slug, date)
+    ids = [lead["id"] for lead in leads]
+    if len(leads) != 224 or len(set(ids)) != len(ids):
+        raise ValueError("Expected 224 Kota leads with unique IDs")
+    output = ROOT / "src/data/prospectsKota.ts"
+    output.write_text(
+        "import type { Prospect } from '../types/prospect';\n\n"
+        "// Generated from the 24 September 2026 Kota workbook by scripts/import-prospect-workbooks.py.\n"
+        "export const prospectsKota: Prospect[] = "
+        + json.dumps(leads, ensure_ascii=False, separators=(",", ":"))
+        + ";\n",
+        encoding="utf-8",
+    )
+    print(f"Wrote {output}: {len(leads)} Kota leads")
+
+
 if __name__ == "__main__":
-    main(Path(sys.argv[1] if len(sys.argv) > 1 else "."))
+    if len(sys.argv) > 2 and sys.argv[1] == "--kota":
+        main_kota(Path(sys.argv[2]))
+    else:
+        main(Path(sys.argv[1] if len(sys.argv) > 1 else "."))
