@@ -4,15 +4,17 @@ import { prospectsHyderabad } from './prospectsHyderabad';
 import { prospectsMiraRoad } from './prospectsMiraRoad';
 import { prospectsDelhi } from './prospectsDelhi';
 import { prospectsAdditional } from './prospectsAdditional';
+import { prospectsKota } from './prospectsKota';
 import { APP_CONFIG } from '../config';
 
-// Preserve original order and IDs for existing local tracking; append the five new batches.
+// Preserve original order and IDs for existing local tracking; append newer batches.
 export const allProspects: Prospect[] = [
   ...prospectsChandigarh,
   ...prospectsHyderabad,
   ...prospectsMiraRoad,
   ...prospectsDelhi,
-  ...prospectsAdditional
+  ...prospectsAdditional,
+  ...prospectsKota
 ];
 
 export function validateProspectsData(prospects: Prospect[] = allProspects): ValidationSummary {
